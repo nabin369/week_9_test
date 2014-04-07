@@ -193,13 +193,24 @@ end
 # 'the lion the witch and the wardrobe' becomes
 # 'The Lion the Witch and the Wardrobe'
 def titleize_a_string string
-
+  string.capitalize!
+  word_no_cap = ['a', 'and', 'the']
+  phrase = string.split().map do |word|
+    if word_no_cap.include?(word)
+      word
+    else
+      word.capitalize
+    end
+  end.join(' ')
+  phrase
 end
 
 # return true if a string contains any special characters
 # where 'special character' means anything apart from the letters
 # a-z (uppercase and lower) or numbers
-
+def check_a_string_for_special_characters string
+  string =~ /\W/
+end
 
 # get the upper limit of a range. e.g. for the range 1..20, you
 # should return 20
@@ -209,43 +220,76 @@ end
 
 # should return true for a 3 dot range like 1...20, false for a
 # normal 2 dot range
-
+def is_a_3_dot_range? range
+  range.exclude_end?
+end
 
 # get the square root of a number
-
+def square_root_of number
+  Math.sqrt(number)
+end
 
 # count the number of words in a file
-
+def word_count_a_file file
+  IO.read(file).split.length
+end
 
 # --- tougher ones ---
 
 # call an arbitrary method from a string. so if I
 # called call_method_from_string('foobar')
 # the method foobar should be invoked
-
+def call_method_from_string string
+  send(string)
+end
 
 # return true if the date is a uk bank holiday for 2014
 # the list of bank holidays is here:
 # https://www.gov.uk/bank-holidays
+def is_a_2014_bank_holiday? date
+  day = date.strftime('%-d/%-m')
+  %w(1/1 18/4 21/4 5/5 26/5 25/8 25/12 26/12).include? day
+end
 
 
 # given your birthday this year, this method tells you
 # the next year when your birthday will fall on a friday
 # e.g. january 1st, will next be a friday in 2016
 # return the day as a capitalized string like 'Friday'
-
+def your_birthday_is_on_a_friday_in_the_year birthday
+  until birthday.friday?
+    birthday = Time.new birthday.year + 1, birthday.month, birthday.day
+  end
+  birthday.year
+end
 
 # in a file, total the number of times words of different lengths
 # appear. So in a file with the text "the cat sat on the blue mat"
 # I have 5 words which are 3 letters long, 1 which is 2 letters long
 # and 1 that is 4 letters long. Return it as a hash in the format
 # word_length => count, e.g. {2 => 1, 3 => 5, 4 => 1}
+def count_words_of_each_length_in_a_file file_path
+  words, count = IO.read(file_path).scan(/\w+/), Hash.new(0)
 
+  words.each {|w| count[w.size] += 1} and return count
+end
 
 # implement fizzbuzz without modulo, i.e. the % method
 # go from 1 to 100
 # (there's no RSpec test for this one)
-
+def fizzbuzz
+  1.upto(100) do |n|
+    str = ''
+    if (n/15.0).round == (n/15.0)
+      str << 'fizzbuzz'
+    elsif (n/3.0).round == (n/3.0)
+        str << 'fizz'
+    elsif (n/5.0).round == (n/5.0)
+        str << 'buzz'
+    end
+    puts str.empty? ? n : str
+  end
+end
 
 # print the lyrics of the song 99 bottles of beer on the wall
 # http://www.99-bottles-of-beer.net/lyrics.html
@@ -253,3 +297,14 @@ end
 # beer on the wall, and print 'no more bottles of beer on the wall'
 # at the end.
 # (there's no RSpec test for this one)
+def beersong
+  99.downto(1) do |n|
+    noun = Hash.new('bottles')
+    noun[1] = 'bottle'
+
+    puts "#{n} #{noun[n]} of beer on the wall, #{n} #{noun[n]} of beer."
+    puts "Take one down and pass it around, #{n-1} #{noun[n-1]} of beer on the wall" if n > 1
+  end
+    puts "No more bottles of beer on the wall"
+end
+beersong
